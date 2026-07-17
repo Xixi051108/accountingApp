@@ -1,0 +1,84 @@
+<view class="container">
+  <view class="page-dots">
+    <view class="dot pink"></view>
+    <view class="dot mint"></view>
+    <view class="dot violet"></view>
+  </view>
+
+  <view class="hero">
+    <view class="sticker">Daily</view>
+    <view class="hero-top">
+      <view>
+        <view class="eyebrow">今日手帐账本</view>
+        <view class="hero-title">把每一笔钱轻轻记下</view>
+      </view>
+      <view class="count-pill">{{billCount}} 笔</view>
+    </view>
+
+    <view class="hero-stats">
+      <view class="stat-box">
+        <text class="stat-label">今日支出</text>
+        <text class="stat-value">¥{{todayExpense}}</text>
+      </view>
+      <view class="stat-box">
+        <text class="stat-label">本月支出</text>
+        <text class="stat-value">¥{{monthExpense}}</text>
+      </view>
+      <view class="stat-box">
+        <text class="stat-label">当前结余</text>
+        <text class="stat-value">¥{{balance}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="form-card">
+    <view class="form-title-row">
+      <view>
+        <view class="form-title">记一笔</view>
+        <view class="form-subtitle">金额、类型、分类就够啦</view>
+      </view>
+      <view class="paper-clip"></view>
+    </view>
+
+    <view class="amount-panel">
+      <text class="field-label">金额</text>
+      <view class="amount-row">
+        <text class="currency">¥</text>
+        <input class="money-input" type="digit" placeholder="0.00" value="{{money}}" bindinput="inputMoney" />
+      </view>
+    </view>
+
+    <view class="section">
+      <view class="section-title">收支类型</view>
+      <view class="type-switch">
+        <view class="type-option {{type === '支出' ? 'active expense-active' : ''}}" bindtap="selectType" data-type="支出">支出</view>
+        <view class="type-option {{type === '收入' ? 'active income-active' : ''}}" bindtap="selectType" data-type="收入">收入</view>
+      </view>
+    </view>
+
+    <view class="section">
+      <view class="section-title">分类</view>
+      <view class="category-grid">
+        <view
+          class="category-chip {{categoryIndex == index ? 'selected' : ''}}"
+          wx:for="{{categories}}"
+          wx:key="*this"
+          bindtap="selectCategory"
+          data-index="{{index}}"
+        >
+          <text class="category-mark">{{categoryMarks[index]}}</text>
+          <text class="category-text">{{item}}</text>
+        </view>
+      </view>
+      <input
+        class="other-input"
+        wx:if="{{categories[categoryIndex] === '其他'}}"
+        placeholder="请输入具体分类，如买书、红包"
+        value="{{otherCategory}}"
+        bindinput="inputOtherCategory"
+      />
+    </view>
+
+    <button class="save-btn" bindtap="saveRecord">记入账本</button>
+  </view>
+</view>

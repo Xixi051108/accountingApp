@@ -1,0 +1,32 @@
+<view class="container">
+  <view class="header">
+    <view>
+      <view class="header-title">账单贴纸本</view>
+      <view class="header-desc">共计 {{billList.length}} 笔账单</view>
+    </view>
+    <view class="header-tag">Bills</view>
+  </view>
+
+  <scroll-view scroll-y="true" class="list-container">
+    <view wx:if="{{billList.length === 0}}" class="empty-tips">
+      暂无账单记录，去记一笔吧~
+    </view>
+
+    <view class="bill-item" wx:for="{{billList}}" wx:key="id">
+      <view class="type-sticker {{item.type === '支出' ? 'expense-sticker' : 'income-sticker'}}">
+        {{item.type === '支出' ? '出' : '入'}}
+      </view>
+      <view class="item-main">
+        <view class="item-left">
+          <text class="category">{{item.category}}</text>
+          <text class="date">{{item.date}}</text>
+        </view>
+        <view class="item-right">
+          <text class="money {{item.type === '支出' ? 'expense' : 'income'}}">
+            {{item.type === '支出' ? '-' : '+'}}{{item.money}}
+          </text>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+</view>

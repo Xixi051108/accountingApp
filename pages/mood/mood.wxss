@@ -1,0 +1,412 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #fff6f8;
+  padding: 28rpx 28rpx 34rpx;
+  box-sizing: border-box;
+}
+
+.journal-title-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30rpx;
+  border-radius: 32rpx;
+  background: linear-gradient(135deg, #f2eaff 0%, #ffd7e3 100%);
+  box-shadow: 0 12rpx 26rpx rgba(174, 139, 224, 0.14);
+}
+
+.journal-kicker {
+  color: #9b7fd7;
+  font-size: 23rpx;
+  font-weight: 800;
+}
+
+.journal-title {
+  margin-top: 8rpx;
+  color: #3b2c36;
+  font-size: 40rpx;
+  font-weight: 900;
+}
+
+.journal-stamp {
+  width: 82rpx;
+  height: 82rpx;
+  line-height: 82rpx;
+  border-radius: 28rpx;
+  background-color: #fff;
+  color: #ff7fa3;
+  text-align: center;
+  font-size: 38rpx;
+  font-weight: 900;
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 24rpx;
+  padding: 22rpx 20rpx;
+  border-radius: 28rpx 28rpx 0 0;
+  background-color: #fff;
+  border: 2rpx dashed #ffd0de;
+  border-bottom: none;
+}
+
+.month-title {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: #3b2c36;
+}
+
+.year-text {
+  display: block;
+  font-size: 26rpx;
+  line-height: 32rpx;
+  font-weight: 900;
+}
+
+.month-text {
+  display: block;
+  margin-top: 2rpx;
+  font-size: 30rpx;
+  line-height: 34rpx;
+  font-weight: 900;
+}
+
+.month-btn {
+  width: 96rpx;
+  height: 58rpx;
+  line-height: 58rpx;
+  padding: 0;
+  border-radius: 999rpx;
+  background-color: #ffe2ec;
+  color: #ff6f98;
+  font-size: 23rpx;
+  font-weight: 800;
+}
+
+.month-btn::after {
+  border: none;
+}
+
+.calendar-grid {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  padding: 8rpx 0 18rpx;
+  border-radius: 0 0 28rpx 28rpx;
+  background-color: #fff;
+  border: 2rpx dashed #ffd0de;
+  border-top: none;
+  box-sizing: border-box;
+}
+
+.weekday {
+  width: 14.285%;
+  text-align: center;
+  font-size: 24rpx;
+  color: #a18b96;
+  padding: 18rpx 0;
+  font-weight: 700;
+}
+
+.day-box,
+.day.empty {
+  width: 14.285%;
+  height: 96rpx;
+  box-sizing: border-box;
+}
+
+.day-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.day-box.active {
+  background-color: #ffedf3;
+  border-radius: 18rpx;
+  color: #ff6f98;
+  font-weight: 900;
+}
+
+.day-box.today .day-num {
+  border: 2rpx solid #ff9fbc;
+  border-radius: 50%;
+}
+
+.day-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48rpx;
+  height: 48rpx;
+  font-size: 28rpx;
+  box-sizing: border-box;
+}
+
+.mood-dot {
+  width: 10rpx;
+  height: 10rpx;
+  border-radius: 50%;
+  margin-top: 8rpx;
+}
+
+.mood-dot.mood-good { background-color: #ffbb5c; }
+.mood-dot.mood-normal { background-color: #70d7bd; }
+.mood-dot.mood-bad { background-color: #b6a4f5; }
+
+.editor-section,
+.detail-section {
+  margin-top: 24rpx;
+}
+
+.section-title {
+  font-size: 27rpx;
+  color: #8d7480;
+  margin-bottom: 16rpx;
+  font-weight: 800;
+}
+
+.editor-card,
+.diary-card {
+  background: #fff;
+  border-radius: 28rpx;
+  border: 2rpx dashed #ffd0de;
+  box-shadow: 0 8rpx 22rpx rgba(90, 60, 78, 0.08);
+}
+
+.editor-card {
+  padding: 24rpx;
+}
+
+.editor-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18rpx;
+}
+
+.editor-label {
+  color: #3b2c36;
+  font-size: 28rpx;
+  font-weight: 800;
+}
+
+.picker-box {
+  min-width: 150rpx;
+  padding: 12rpx 20rpx;
+  border-radius: 999rpx;
+  background-color: #fff8dc;
+  color: #8d7480;
+  font-size: 26rpx;
+  text-align: center;
+  font-weight: 700;
+}
+
+.arrow {
+  color: #ff7fa3;
+  font-size: 22rpx;
+}
+
+.diary-input {
+  width: 100%;
+  height: 160rpx;
+  padding: 22rpx;
+  box-sizing: border-box;
+  border-radius: 22rpx;
+  background-color: #fbfafc;
+  color: #3b2c36;
+  font-size: 28rpx;
+  line-height: 1.5;
+}
+
+.save-btn {
+  margin-top: 22rpx;
+  width: 100% !important;
+  height: 80rpx;
+  line-height: 80rpx;
+  border-radius: 999rpx;
+  background-color: #ff7fa3;
+  color: #fff;
+  font-size: 28rpx;
+  font-weight: 900;
+}
+
+.save-btn::after {
+  border: none;
+}
+
+.book-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16rpx;
+}
+
+.book-subtitle {
+  margin-top: 4rpx;
+  color: #a18b96;
+  font-size: 23rpx;
+}
+
+.book-label {
+  padding: 8rpx 18rpx;
+  border-radius: 999rpx;
+  background-color: #fff;
+  color: #ff7fa3;
+  font-size: 22rpx;
+  font-weight: 800;
+  box-shadow: 0 6rpx 16rpx rgba(90, 60, 78, 0.08);
+}
+
+.detail-list {
+  max-height: 560rpx;
+}
+
+.empty-book {
+  padding-bottom: 8rpx;
+}
+
+.book-cover {
+  position: relative;
+  display: flex;
+  min-height: 260rpx;
+  border-radius: 30rpx;
+  overflow: hidden;
+  background: linear-gradient(135deg, #ffd7e3 0%, #fff8dc 100%);
+  box-shadow: 0 12rpx 28rpx rgba(90, 60, 78, 0.1);
+}
+
+.cover-spine {
+  width: 46rpx;
+  background-color: #ff9fbc;
+}
+
+.cover-content {
+  flex: 1;
+  padding: 56rpx 34rpx;
+  text-align: center;
+}
+
+.cover-title {
+  color: #3b2c36;
+  font-size: 34rpx;
+  font-weight: 900;
+}
+
+.cover-desc {
+  margin-top: 14rpx;
+  color: #a18b96;
+  font-size: 26rpx;
+}
+
+.book-shell {
+  position: relative;
+  padding-left: 28rpx;
+}
+
+.book-spine {
+  position: absolute;
+  left: 8rpx;
+  top: 16rpx;
+  bottom: 22rpx;
+  width: 24rpx;
+  border-radius: 999rpx;
+  background-color: #ff9fbc;
+  box-shadow: inset -5rpx 0 0 rgba(255, 255, 255, 0.35);
+}
+
+.diary-page {
+  position: relative;
+  min-height: 330rpx;
+  margin-bottom: 24rpx;
+  padding: 30rpx 28rpx 34rpx 48rpx;
+  border-radius: 28rpx;
+  background-color: #fffdf6;
+  border: 2rpx solid #f5dfc7;
+  box-shadow: 0 12rpx 28rpx rgba(90, 60, 78, 0.1);
+  box-sizing: border-box;
+}
+
+.diary-page::after {
+  content: "";
+  position: absolute;
+  right: 18rpx;
+  top: 18rpx;
+  width: 54rpx;
+  height: 54rpx;
+  border-radius: 0 22rpx 0 22rpx;
+  background-color: #fff0b9;
+}
+
+.page-rings {
+  position: absolute;
+  left: 18rpx;
+  top: 54rpx;
+}
+
+.ring {
+  width: 18rpx;
+  height: 18rpx;
+  margin-bottom: 42rpx;
+  border-radius: 50%;
+  background-color: #ffd0de;
+  box-shadow: inset 0 0 0 5rpx #fff;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 18rpx;
+  border-bottom: 2rpx dashed #f0d7df;
+}
+
+.page-date {
+  display: block;
+  color: #3b2c36;
+  font-size: 29rpx;
+  font-weight: 900;
+}
+
+.page-mood {
+  display: block;
+  margin-top: 8rpx;
+  color: #ff7fa3;
+  font-size: 24rpx;
+  font-weight: 800;
+}
+
+.page-number {
+  color: #b9a0ad;
+  font-size: 23rpx;
+  font-weight: 800;
+}
+
+.page-lines {
+  min-height: 168rpx;
+  margin-top: 22rpx;
+  background-image: linear-gradient(to bottom, transparent 47rpx, #f2e6ec 48rpx);
+  background-size: 100% 48rpx;
+}
+
+.diary-text {
+  color: #5d4b56;
+  font-size: 29rpx;
+  line-height: 48rpx;
+  word-break: break-all;
+}
+
+.page-footer {
+  margin-top: 22rpx;
+  color: #c0aab5;
+  font-size: 22rpx;
+  text-align: right;
+  font-weight: 700;
+}

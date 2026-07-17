@@ -1,0 +1,99 @@
+<view class="container">
+  <view class="journal-title-card">
+    <view>
+      <view class="journal-kicker">Mood Diary</view>
+      <view class="journal-title">心情日记</view>
+    </view>
+    <view class="journal-stamp">记</view>
+  </view>
+
+  <view class="calendar-header">
+    <button class="month-btn" bindtap="prevMonth">上月</button>
+    <view class="month-title">
+      <text class="year-text">{{currentYear}}年</text>
+      <text class="month-text">{{currentMonth}}月</text>
+    </view>
+    <button class="month-btn" bindtap="nextMonth">下月</button>
+  </view>
+
+  <view class="calendar-grid">
+    <view class="weekday" wx:for="{{weeks}}" wx:key="*this">{{item}}</view>
+
+    <view class="day empty" wx:for="{{emptyDays}}" wx:key="index"></view>
+
+    <view
+      class="day-box {{selectedDate === item.fullDate ? 'active' : ''}} {{item.isToday ? 'today' : ''}}"
+      wx:for="{{daysInMonth}}"
+      wx:key="fullDate"
+      bindtap="selectDate"
+      data-date="{{item.fullDate}}"
+    >
+      <text class="day-num">{{item.day}}</text>
+      <view class="mood-dot {{item.moodClass}}" wx:if="{{item.hasMood}}"></view>
+    </view>
+  </view>
+
+  <view class="editor-section">
+    <view class="section-title">写 {{selectedDateText}} 的日记</view>
+    <view class="editor-card">
+      <view class="editor-row">
+        <text class="editor-label">心情</text>
+        <picker bindchange="moodLevelChange" value="{{moodLevelIndex}}" range="{{moodLevels}}">
+          <view class="picker-box">{{moodLevels[moodLevelIndex]}} <text class="arrow">▼</text></view>
+        </picker>
+      </view>
+      <textarea
+        class="diary-input"
+        placeholder="今天发生了什么？"
+        value="{{diaryContent}}"
+        bindinput="inputDiaryContent"
+        maxlength="300"
+      />
+      <button class="save-btn" bindtap="saveDiary">保存日记</button>
+    </view>
+  </view>
+
+  <view class="detail-section">
+    <view class="book-title-row">
+      <view>
+        <view class="section-title">当天日记本</view>
+        <view class="book-subtitle">翻开 {{selectedDateText}} 的这一页</view>
+      </view>
+      <view class="book-label">Diary</view>
+    </view>
+
+    <scroll-view scroll-y="true" class="detail-list">
+      <view wx:if="{{selectedDiaries.length === 0}}" class="empty-book">
+        <view class="book-cover">
+          <view class="cover-spine"></view>
+          <view class="cover-content">
+            <view class="cover-title">未写下的一页</view>
+            <view class="cover-desc">这天还没有日记，先写一篇吧</view>
+          </view>
+        </view>
+      </view>
+
+      <view class="book-shell" wx:else>
+        <view class="book-spine"></view>
+        <view class="diary-page" wx:for="{{selectedDiaries}}" wx:key="id">
+          <view class="page-rings">
+            <view class="ring"></view>
+            <view class="ring"></view>
+            <view class="ring"></view>
+          </view>
+          <view class="page-header">
+            <view>
+              <text class="page-date">{{item.meta}}</text>
+              <text class="page-mood">心情：{{item.mood}}</text>
+            </view>
+            <text class="page-number">P.{{item.pageNo}}</text>
+          </view>
+          <view class="page-lines">
+            <view class="diary-text">{{item.content}}</view>
+          </view>
+          <view class="page-footer">My little diary</view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+</view>

@@ -1,0 +1,129 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: 28rpx 28rpx 0;
+  background-color: #fff6f8;
+  box-sizing: border-box;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30rpx;
+  border-radius: 32rpx;
+  background: linear-gradient(135deg, #ffd7e3 0%, #fff8dc 100%);
+  box-shadow: 0 12rpx 26rpx rgba(255, 127, 163, 0.14);
+}
+
+.header-title {
+  color: #3b2c36;
+  font-size: 38rpx;
+  font-weight: 900;
+}
+
+.header-desc {
+  margin-top: 8rpx;
+  color: #9c8290;
+  font-size: 25rpx;
+}
+
+.header-tag {
+  padding: 10rpx 18rpx;
+  border-radius: 999rpx;
+  background-color: #fff;
+  color: #ff7fa3;
+  font-size: 22rpx;
+  font-weight: 800;
+}
+
+.list-container {
+  flex: 1;
+  margin-top: 24rpx;
+  box-sizing: border-box;
+}
+
+.bill-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  padding: 28rpx 26rpx;
+  border-radius: 30rpx;
+  margin-bottom: 20rpx;
+  border: 2rpx dashed #ffd0de;
+  box-shadow: 0 8rpx 22rpx rgba(90, 60, 78, 0.08);
+}
+
+.type-sticker {
+  width: 68rpx;
+  height: 68rpx;
+  line-height: 68rpx;
+  margin-right: 20rpx;
+  border-radius: 24rpx;
+  text-align: center;
+  color: #fff;
+  font-size: 28rpx;
+  font-weight: 900;
+}
+
+.expense-sticker {
+  background-color: #ff7fa3;
+}
+
+.income-sticker {
+  background-color: #70d7bd;
+}
+
+.item-main {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-width: 0;
+}
+
+.item-left {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.category {
+  font-size: 31rpx;
+  font-weight: 900;
+  color: #3b2c36;
+  margin-bottom: 8rpx;
+}
+
+.date {
+  font-size: 23rpx;
+  color: #a18b96;
+}
+
+.item-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-left: 20rpx;
+}
+
+.money {
+  font-size: 34rpx;
+  font-weight: 900;
+}
+
+.expense { color: #ff6f98; }
+.income { color: #45bfa4; }
+
+.empty-tips {
+  margin-top: 80rpx;
+  padding: 70rpx 30rpx;
+  border-radius: 32rpx;
+  background-color: #fff;
+  color: #a18b96;
+  text-align: center;
+  font-size: 28rpx;
+  border: 2rpx dashed #ffd0de;
+}
