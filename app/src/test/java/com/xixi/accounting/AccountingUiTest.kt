@@ -29,17 +29,27 @@ class AccountingUiTest {
         }
     }
 
-    private fun addEntry(amount: String, category: String, merchant: String) {
+    private fun addEntry(amount: String, category: String, merchant: String, time: String = "") {
         compose.onNode(hasScrollAction()).performScrollToNode(hasText("手动记一笔"))
         compose.onNodeWithText("手动记一笔").performClick()
         compose.onNodeWithText("金额（元）").performTextInput(amount)
+        if (time.isNotBlank()) compose.onNodeWithText("交易时间 HH:mm（可留空）").performScrollTo().performTextInput(time)
         compose.onNodeWithText("商户或备注").performScrollTo().performTextInput(merchant)
         compose.onNodeWithText("其他").performScrollTo().performClick()
         compose.onNodeWithText(category).performClick()
+        compose.onNode(isToggleable() and hasAnySibling(hasText("记住该商户的分类（只影响之后导入的“其他”分类）")))
+            .performScrollTo().assertIsOn()
         compose.onNodeWithText("确认入账").performClick()
         compose.waitUntil(10000) {
             compose.onAllNodesWithText("确认入账").fetchSemanticsNodes().isEmpty()
         }
+    }
+
+    @Test fun differentSecondsInTheSameMinuteDoNotRequireDuplicateConfirmation() {
+        addEntry("15.00", "餐饮", "示例秒级商户", "12:10:01")
+        addEntry("15.00", "餐饮", "示例秒级商户", "12:10:45")
+        compose.onNode(hasScrollAction()).performScrollToNode(hasText("${today()} 12:10:45 · 餐饮"))
+        compose.onNodeWithText("${today()} 12:10:45 · 餐饮").assertIsDisplayed()
     }
 
     @Test fun manualEntryCanBeConfirmedAndQueriedThroughTheActualScreens() {

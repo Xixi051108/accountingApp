@@ -11,8 +11,8 @@ android {
         applicationId = "com.xixi.accounting"
         minSdk = 31
         targetSdk = 36
-        versionCode = 6
-        versionName = "0.2.3-screenshot"
+        versionCode = 7
+        versionName = "0.2.4-screenshot"
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

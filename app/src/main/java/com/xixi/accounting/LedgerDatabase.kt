@@ -47,11 +47,19 @@ class LedgerStore(private val db: LedgerDatabase) {
         val dao = db.ledger()
         if (dao.imported(hash)) return@withTransaction ImportReport(duplicateImage = true)
         if (candidates.isEmpty()) return@withTransaction ImportReport()
-        val rules = dao.categories().associate { it.merchant to it.category }
-        val classified = candidates.map { entry ->
-            if (entry.category == "其他" && entry.merchant in rules) entry.copy(category = rules.getValue(entry.merchant)) else entry
+        val existing = dao.all()
+        val rules = dao.categories().groupBy { LedgerRules.merchantKey(it.merchant) }.mapValues { (key, rules) ->
+            rules.firstOrNull { it.merchant == key }?.category ?: rules.map { it.category }.distinct().singleOrNull()
         }
-        val result = LedgerRules.prepareImport(dao.all(), classified, hash)
+        val history = existing.filter { it.posted && it.merchant.isNotBlank() && it.category != "其他" }
+            .groupBy { LedgerRules.merchantKey(it.merchant) }
+            .mapValues { (_, entries) -> entries.map { it.category }.distinct().singleOrNull() }
+        val classified = candidates.map { entry ->
+            val merchant = LedgerRules.merchantKey(entry.merchant)
+            val category = rules[merchant] ?: history[merchant]
+            if (entry.category == "其他" && merchant.isNotBlank() && category != null) entry.copy(category = category) else entry
+        }
+        val result = LedgerRules.prepareImport(existing, classified, hash)
         dao.save(result.entries)
         dao.markImported(ImportedImage(hash))
         ImportReport(result.entries.count { it.posted }, result.entries.count { !it.posted }, result.skipped)
@@ -61,7 +69,7 @@ class LedgerStore(private val db: LedgerDatabase) {
         val confirmed = LedgerRules.confirm(entry)
         db.ledger().save(listOf(confirmed))
         if (rememberCategory && confirmed.merchant.isNotBlank())
-            db.ledger().remember(MerchantCategory(confirmed.merchant, confirmed.category))
+            db.ledger().remember(MerchantCategory(LedgerRules.merchantKey(confirmed.merchant), confirmed.category))
     }
 
     suspend fun delete(id: String) = db.ledger().delete(id)

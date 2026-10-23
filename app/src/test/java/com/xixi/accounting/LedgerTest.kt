@@ -7,6 +7,23 @@ class LedgerTest {
     private fun entry(time: String = "12:10", amount: Long = 1500) = LedgerEntry(
         amountFen = amount, date = "2026-10-12", time = time, direction = "支出", merchant = "示例餐厅", category = "餐饮")
 
+    @Test fun duplicateChecksUseAvailableTimePrecisionAndReliableTransactionIds() {
+        val first = LedgerRules.confirm(entry("12:10:01"))
+        fun imported(candidate: LedgerEntry, existing: LedgerEntry = first) =
+            LedgerRules.prepareImport(listOf(existing), listOf(candidate), "next-image").entries.single()
+        assertTrue(imported(entry("12:10:45")).posted)
+        assertFalse(imported(entry("12:10")).posted)
+        assertFalse(imported(entry("12:10:01")).posted)
+        assertTrue(imported(entry("12:10:01").copy(merchant = "另一家餐厅")).posted)
+        assertTrue(imported(entry("12:10:01").copy(direction = "收入", kind = "收入")).posted)
+        assertTrue(imported(entry("12:10:01").copy(transactionId = "transaction-b"),
+            first.copy(transactionId = "transaction-a")).posted)
+        val conflict = imported(entry("12:10:45").copy(transactionId = "transaction-a"),
+            first.copy(transactionId = "transaction-a"))
+        assertFalse(conflict.posted)
+        assertTrue(conflict.reason.contains("冲突"))
+    }
+
     @Test fun clearTransactionsPostWhileUncertainAndOverlappingRowsAwaitConfirmation() {
         val first = LedgerRules.prepareImport(emptyList(), listOf(entry(), entry("18:20"), entry("19:00").copy(amountFen = null)), "image-a")
         assertEquals(3, first.entries.size)

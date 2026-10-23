@@ -438,13 +438,13 @@ internal fun EntryEditor(entry: LedgerEntry, entries: List<LedgerEntry>, busy: B
     var category by rememberSaveable(entry.id) { mutableStateOf(entry.category) }
     var direction by rememberSaveable(entry.id) { mutableStateOf(entry.direction) }
     var kind by rememberSaveable(entry.id) { mutableStateOf(entry.kind) }
-    var rememberCategory by rememberSaveable(entry.id) { mutableStateOf(false) }
+    var rememberCategory by rememberSaveable(entry.id) { mutableStateOf(true) }
     var error by remember { mutableStateOf("") }
     var deleteConfirm by remember { mutableStateOf(false) }
-    var duplicateConfirmed by rememberSaveable(entry.id) { mutableStateOf(false) }
-    val possibleDuplicates = entries.filter { it.id != entry.id && it.posted &&
-        ((entry.transactionId.isNotBlank() && entry.transactionId == it.transactionId) ||
-            (it.amountFen == ScreenshotParser.money(amount) && it.date == date.trim() && it.time.take(5) == time.trim().take(5))) }
+    var duplicateConfirmed by rememberSaveable(entry.id, amount, date, time, merchant, direction, kind) { mutableStateOf(false) }
+    val changed = entry.copy(amountFen = ScreenshotParser.money(amount), date = date.trim(), time = time.trim(),
+        merchant = merchant.trim(), category = category, direction = direction, kind = kind)
+    val possibleDuplicates = entries.filter { it.id != entry.id && it.posted && LedgerRules.possibleDuplicate(it, changed) }
     Dialog(onDismissRequest = dismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         Surface(Modifier.fillMaxWidth(.95f).widthIn(max = 600.dp).fillMaxHeight(.94f), shape = RoundedCornerShape(24.dp), color = Sheet) {
             Column(Modifier.imePadding()) {
@@ -468,6 +468,7 @@ internal fun EntryEditor(entry: LedgerEntry, entries: List<LedgerEntry>, busy: B
                         Checkbox(rememberCategory, { rememberCategory = it }, enabled = merchant.isNotBlank())
                         Text("记住该商户的分类（只影响之后导入的“其他”分类）", Modifier.weight(1f))
                     }
+                    Text("未勾选时，也会参考该商户已入账的一致分类。", color = Muted, fontSize = 11.sp)
                     if (possibleDuplicates.isNotEmpty()) {
                         Text("可能重复的已入账记录", color = Amber, fontWeight = FontWeight.Medium)
                         possibleDuplicates.take(3).forEach { Text("${it.date} ${it.time} · ${it.merchant} · ¥${it.amountFen?.let(LedgerRules::formatMoney)}", color = Muted) }
@@ -481,8 +482,6 @@ internal fun EntryEditor(entry: LedgerEntry, entries: List<LedgerEntry>, busy: B
                 }
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Button(onClick = {
-                        val changed = entry.copy(amountFen = ScreenshotParser.money(amount), date = date.trim(), time = time.trim(),
-                            merchant = merchant.trim(), category = category, direction = direction, kind = kind)
                         error = LedgerRules.validation(changed).orEmpty()
                         if (error.isBlank() && possibleDuplicates.isNotEmpty() && !duplicateConfirmed) error = "请先核对上面的疑似重复记录"
                         if (error.isBlank()) save(changed, rememberCategory)

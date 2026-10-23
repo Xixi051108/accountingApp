@@ -8,6 +8,51 @@ import java.time.ZoneId
 class ScreenshotTest {
     private fun line(text: String, y: Int, x: Int = 20) = OcrLine(text, x, y, x + 200, y + 24)
 
+    @Test fun listRowsKeepMerchantAndRecognizeOcrClockSeparatorsWithoutExtraConfirmation() {
+        val candidates = ScreenshotParser.parse(listOf(
+            line("2026年10月12日", 20),
+            line("示例茶店 -8.60", 100), line("9：05：12", 140),
+            line("餐饮 -12.00", 200), line("12时10分30秒 | 示例食堂", 240),
+        ))
+        assertEquals(listOf("09:05:12", "12:10:30"), candidates.map { it.time })
+        assertEquals(listOf("示例茶店", "示例食堂"), candidates.map { it.merchant })
+        assertTrue(LedgerRules.prepareImport(emptyList(), candidates, "clock-layout").entries.all { it.posted })
+    }
+
+    @Test fun detailUsesPaymentTimeAcrossLinesInsteadOfCreationTimeOrPhoneClock() {
+        val header = listOf(line("09:41", 0), line("交易详情", 40), line("示例茶店", 80),
+            line("-8.60", 120), line("支付成功", 160), line("创建时间 2026-10-11 08:00", 200))
+        val result = ScreenshotParser.parse(header + listOf(line("支付时间", 240),
+            line("2026年10月12日", 280), line("9:05:12", 320))).single()
+        assertEquals("2026-10-12", result.date)
+        assertEquals("09:05:12", result.time)
+        assertEquals("", result.reason)
+        val missingClock = ScreenshotParser.parse(header + listOf(line("支付时间 2026年10月12日", 240))).single()
+        assertEquals("", missingClock.time)
+    }
+
+    @Test fun listDateAndTimeBelowAmountBelongToThatTransaction() {
+        val candidates = ScreenshotParser.parse(listOf(
+            line("示例茶店 -8.60", 100), line("10月12日 09:05:12", 140),
+            line("示例食堂 -12.00", 200), line("10月13日 12:10:30", 240),
+        ), 2026)
+        assertEquals(listOf("2026-10-12", "2026-10-13"), candidates.map { it.date })
+        assertEquals(listOf("09:05:12", "12:10:30"), candidates.map { it.time })
+        assertEquals(listOf("示例茶店", "示例食堂"), candidates.map { it.merchant })
+        assertTrue(LedgerRules.prepareImport(emptyList(), candidates, "dated-rows").entries.all { it.posted })
+    }
+
+    @Test fun transactionTimeDoesNotBorrowFromTheNextFieldAndDatedFailuresStayPending() {
+        val detail = ScreenshotParser.parse(listOf(line("09:41", 0), line("交易详情", 40),
+            line("示例茶店", 80), line("-8.60", 120), line("支付成功", 160),
+            line("支付时间 2026年10月12日", 200), line("创建时间 2026年10月11日 08:00", 240))).single()
+        assertEquals("", detail.time)
+        val failed = ScreenshotParser.parse(listOf(line("示例茶店 -8.60", 100),
+            line("2026年10月12日 09:05:12 支付失败", 140)))
+        assertEquals("09:05:12", failed.single().time)
+        assertFalse(LedgerRules.prepareImport(emptyList(), failed, "dated-failure").entries.single().posted)
+    }
+
     @Test fun listScreenshotBecomesSeparateTransactionsWithoutDailyTotals() {
         val result = ScreenshotParser.parse(listOf(
             line("2026年10月12日", 20), line("出 31.80 入 0.00", 20, 650),

@@ -1,6 +1,7 @@
 package com.xixi.accounting
 
 import java.time.LocalDate
+import java.text.Normalizer
 import java.util.Locale
 
 data class ImportResult(val entries: List<LedgerEntry>, val skipped: Int = 0)
@@ -10,6 +11,23 @@ data class Totals(val expenseFen: Long, val refundFen: Long, val incomeFen: Long
 
 object LedgerRules {
     val kinds = listOf("消费", "收入", "退款", "转账", "红包", "内部转账")
+    fun merchantKey(merchant: String): String = Normalizer.normalize(merchant, Normalizer.Form.NFKC).filterNot { it.isWhitespace() }
+
+    private fun timesOverlap(first: String, second: String): Boolean {
+        if (first.isBlank() || second.isBlank()) return true
+        val precision = if (first.length == 8 && second.length == 8) 8 else 5
+        return first.take(precision) == second.take(precision)
+    }
+
+    fun possibleDuplicate(first: LedgerEntry, second: LedgerEntry): Boolean {
+        if (first.transactionId.isNotBlank() && second.transactionId.isNotBlank()) return first.transactionId == second.transactionId
+        val firstMerchant = merchantKey(first.merchant)
+        val secondMerchant = merchantKey(second.merchant)
+        return first.date.isNotBlank() && first.date == second.date && first.amountFen != null && first.amountFen == second.amountFen &&
+            first.direction == second.direction && first.kind == second.kind && timesOverlap(first.time, second.time) &&
+            (firstMerchant == secondMerchant || firstMerchant.isBlank() || secondMerchant.isBlank())
+    }
+
     fun validation(entry: LedgerEntry): String? = when {
         entry.amountFen == null || entry.amountFen !in 1..999_999_999_999L -> "请输入有效金额，最多两位小数"
         entry.direction !in listOf("收入", "支出") -> "请选择收支方向"
@@ -31,13 +49,8 @@ object LedgerRules {
             val all = existing + added
             val identical = all.firstOrNull { candidate.transactionId.isNotBlank() && it.transactionId == candidate.transactionId }
             if (identical != null && identical.amountFen == candidate.amountFen && identical.direction == candidate.direction &&
-                identical.kind == candidate.kind && identical.date == candidate.date) { skipped++; continue }
-            val overlap = identical != null || all.any {
-                candidate.date.isNotBlank() && candidate.time.isNotBlank() && candidate.amountFen != null &&
-                    it.date == candidate.date && it.time.take(5) == candidate.time.take(5) &&
-                    it.amountFen == candidate.amountFen && it.direction == candidate.direction &&
-                    (it.merchant == candidate.merchant || it.merchant.isBlank() || candidate.merchant.isBlank())
-            }
+                identical.kind == candidate.kind && identical.date == candidate.date && timesOverlap(identical.time, candidate.time)) { skipped++; continue }
+            val overlap = all.any { possibleDuplicate(it, candidate) }
             val reason = listOfNotNull(candidate.reason.takeIf { it.isNotBlank() }, validation(candidate),
                 if (identical != null) "同一交易号内容冲突，请核对已有账单" else if (overlap) "疑似重复，请核对已有账单" else null)
                 .distinct().joinToString("；")
